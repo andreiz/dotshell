@@ -47,55 +47,63 @@ defaults write -g NSDocumentSaveNewDocumentsToCloud -bool false
 # Automatically quit printer app once the print jobs complete
 defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 
-# Disable the “Are you sure you want to open this application?” dialog
+# Disable the "Are you sure you want to open this application?" dialog
 #- defaults write com.apple.LaunchServices LSQuarantine -bool false
 
 # Display ASCII control characters using caret notation in standard text views
 defaults write -g NSTextShowsControlCharacters -bool true
 
 # Disable Resume system-wide
-defaults write com.apple.systempreferences NSQuitAlwaysKeepsWindows -bool false
+# NOTE: com.apple.systempreferences domain is dead since Ventura (System Preferences → System Settings).
+# This key has no effect on Ventura+.
+#- defaults write com.apple.systempreferences NSQuitAlwaysKeepsWindows -bool false
 
 # Disable automatic termination of inactive apps
-defaults write -g NSDisableAutomaticTermination -bool true
+# NOTE: Automatic Termination was quietly deprecated; this key has no reliable effect in modern macOS.
+#- defaults write -g NSDisableAutomaticTermination -bool true
 
 # Set Help Viewer windows to non-floating mode
-defaults write com.apple.helpviewer DevMode -bool true
+# NOTE: Help Viewer was rebuilt on WKWebView in Ventura; DevMode key no longer has effect.
+#- defaults write com.apple.helpviewer DevMode -bool true
 
 # Reveal IP address, hostname, OS version, etc. when clicking the clock
 # in the login window
 sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
 
-# Disable automatic capitalization as it’s annoying when typing code
+# Disable automatic capitalization as it's annoying when typing code
 defaults write -g NSAutomaticCapitalizationEnabled -bool false
 
-# Disable smart dashes as they’re annoying when typing code
+# Disable smart dashes as they're annoying when typing code
 defaults write -g NSAutomaticDashSubstitutionEnabled -bool false
 
-# Disable automatic period substitution as it’s annoying when typing code
+# Disable automatic period substitution as it's annoying when typing code
 defaults write -g NSAutomaticPeriodSubstitutionEnabled -bool false
 
 # Show battery percentage in menu bar
 #defaults write com.apple.systemuiserver "NSStatusItem Visible com.apple.menuextra.battery" -bool true
 #defaults write com.apple.menuextra.battery '{ ShowPercent = YES; }'
 
-# Show text input menu
-defaults write com.apple.TextInputMenu visible -bool true
-defaults write com.apple.menuextra.textinput ModeNameVisible -bool false
+# NOTE: com.apple.systemuiserver menu bar customization is dead since Ventura.
+# Menu bar items are now managed through System Settings → Control Center.
+# The following two blocks have no effect on Ventura+:
+#- for domain in ~/Library/Preferences/ByHost/com.apple.systemuiserver.*; do
+#-     defaults write "${domain}" dontAutoLoad -array \
+#-       "/System/Library/CoreServices/Menu Extras/Volume.menu" \
+#-       "/System/Library/CoreServices/Menu Extras/User.menu"
+#- done
+#- defaults write com.apple.systemuiserver menuExtras -array \
+#-     "/System/Library/CoreServices/Menu Extras/Bluetooth.menu" \
+#-     "/System/Library/CoreServices/Menu Extras/TimeMachine.menu" \
+#-     "/System/Library/CoreServices/Menu Extras/Battery.menu" \
+#-     "/System/Library/CoreServices/Menu Extras/Clock.menu" \
+#-     "/System/Library/CoreServices/Menu Extras/AirPort.menu" \
+#-     "/System/Library/CoreServices/Menu Extras/Displays.menu"
 
-# Menu bar: hide Volume and User icons
-for domain in ~/Library/Preferences/ByHost/com.apple.systemuiserver.*; do
-    defaults write "${domain}" dontAutoLoad -array \
-      "/System/Library/CoreServices/Menu Extras/Volume.menu" \
-      "/System/Library/CoreServices/Menu Extras/User.menu"
-done
-defaults write com.apple.systemuiserver menuExtras -array \
-    "/System/Library/CoreServices/Menu Extras/Bluetooth.menu" \
-    "/System/Library/CoreServices/Menu Extras/TimeMachine.menu" \
-    "/System/Library/CoreServices/Menu Extras/Battery.menu" \
-    "/System/Library/CoreServices/Menu Extras/Clock.menu" \
-    "/System/Library/CoreServices/Menu Extras/AirPort.menu" \
-    "/System/Library/CoreServices/Menu Extras/Displays.menu" \
+# Show/hide text input menu
+# NOTE: com.apple.TextInputMenu and com.apple.menuextra.textinput are dead since Ventura.
+# Input menu visibility is now in System Settings → Keyboard → Input Sources.
+#- defaults write com.apple.TextInputMenu visible -bool true
+#- defaults write com.apple.menuextra.textinput ModeNameVisible -bool false
 
 ###############################################################################
 # Trackpad, mouse, keyboard, Bluetooth accessories, and input                 #
@@ -183,7 +191,7 @@ sudo systemsetup -setcomputersleep Off > /dev/null
 #    power failure.
 sudo pmset -a hibernatemode 3
 
-# Disable the sudden motion sensor as it’s not useful for SSDs
+# Disable the sudden motion sensor as it's not useful for SSDs
 sudo pmset -a sms 0
 
 # Enable Wake on Network
@@ -214,18 +222,18 @@ defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
 # Show indicator lights for open applications in the Dock
 defaults write com.apple.dock show-process-indicators -bool true
 
-# Don’t animate opening applications from the Dock
+# Don't animate opening applications from the Dock
 defaults write com.apple.dock launchanim -bool false
 
-# Don’t automatically rearrange Spaces based on most recent use
+# Don't automatically rearrange Spaces based on most recent use
 defaults write com.apple.dock mru-spaces -bool false
 
 # Wipe all (default) app icons from the Dock
-# This is only really useful when setting up a new Mac, or if you don’t use
+# This is only really useful when setting up a new Mac, or if you don't use
 # the Dock to launch apps.
 defaults write com.apple.dock persistent-apps -array
 
-# Don’t show recent applications in Dock
+# Don't show recent applications in Dock
 defaults write com.apple.dock show-recents -bool false
 
 # Hot corners
@@ -284,10 +292,11 @@ defaults write -g com.apple.springing.delay -float 0
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 
-# Disable disk image verification
-defaults write com.apple.frameworks.diskimages skip-verify -bool true
-defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
-defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
+# NOTE: Disk image verification skip keys are ignored since Catalina.
+# Gatekeeper now enforces verification regardless of these settings.
+#- defaults write com.apple.frameworks.diskimages skip-verify -bool true
+#- defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
+#- defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
 
 # Automatically open a new Finder window when a volume is mounted
 defaults write com.apple.frameworks.diskimages auto-open-ro-root -bool true
@@ -311,7 +320,7 @@ defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 
 # Increase the size of icons on the desktop and in other icon views
 /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
-/usr/libexec/PlistBuddy -c "Add :FK_StandardViewSettings:IconViewSettings:iconSize integer 80" ~/Library/Preferences/com.apple.finder.plist
+/usr/libexec/PlistBuddy -c "Add :FK_StandardViewSettings:IconViewSettings:iconSize integer 80" "${HOME}/Library/Preferences/com.apple.finder.plist"
 /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
 
 # Use list view in all Finder windows by default
@@ -325,7 +334,7 @@ chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library
 sudo chflags nohidden /Volumes
 
 # Expand the following File Info panes:
-# “General”, “Open with”, and “Sharing & Permissions”
+# "General", "Open with", and "Sharing & Permissions"
 defaults write com.apple.finder FXInfoPanesExpanded -dict \
     General -bool true \
     OpenWith -bool true \
@@ -350,17 +359,17 @@ defaults write com.apple.screencapture type -string "png"
 defaults write com.apple.screencapture disable-shadow -bool true
 
 # Enable subpixel font rendering on non-Apple LCDs
-# Reference: https://github.com/kevinSuttle/macOS-Defaults/issues/17#issuecomment-266633501
 defaults write -g AppleFontSmoothing -int 1
 
-# Enable HiDPI display modes (requires restart)
-sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+# NOTE: DisplayResolutionEnabled is ignored since Catalina and the path
+# is SIP-protected. Removing.
+#- sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
 
 ###############################################################################
 # Safari & WebKit                                                             #
 ###############################################################################
 
-# Privacy: don’t send search queries to Apple
+# Privacy: don't send search queries to Apple
 defaults write com.apple.Safari UniversalSearchEnabled -bool false
 defaults write com.apple.Safari SuppressSearchSuggestions -bool true
 
@@ -371,31 +380,31 @@ defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebK
 # Show the full URL in the address bar (note: this still hides the scheme)
 defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
 
-# Set Safari’s home page to `about:blank` for faster loading
+# Set Safari's home page to `about:blank` for faster loading
 defaults write com.apple.Safari HomePage -string "about:blank"
 
-# Prevent Safari from opening ‘safe’ files automatically after downloading
+# Prevent Safari from opening 'safe' files automatically after downloading
 defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
 
 # Allow hitting the Backspace key to go to the previous page in history
 #- defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled -bool true
 
-# Hide Safari’s bookmarks bar by default
+# Hide Safari's bookmarks bar by default
 defaults write com.apple.Safari ShowFavoritesBar -bool false
 
-# Hide Safari’s sidebar in Top Sites
+# Hide Safari's sidebar in Top Sites
 defaults write com.apple.Safari ShowSidebarInTopSites -bool false
 
-# Disable Safari’s thumbnail cache for History and Top Sites
+# Disable Safari's thumbnail cache for History and Top Sites
 defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2
 
-# Enable Safari’s debug menu
+# Enable Safari's debug menu
 defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
 
-# Make Safari’s search banners default to Contains instead of Starts With
+# Make Safari's search banners default to Contains instead of Starts With
 defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false
 
-# Remove useless icons from Safari’s bookmarks bar
+# Remove useless icons from Safari's bookmarks bar
 defaults write com.apple.Safari ProxiesInBookmarksBar "()"
 
 # Enable the Develop menu and the Web Inspector in Safari
@@ -420,16 +429,16 @@ defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false
 # Warn about fraudulent websites
 defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
 
-# Disable Java
-defaults write com.apple.Safari WebKitJavaEnabled -bool false
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled -bool false
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabledForLocalFiles -bool false
+# NOTE: Java plugin was removed in High Sierra. These keys are accepted but ignored.
+#- defaults write com.apple.Safari WebKitJavaEnabled -bool false
+#- defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled -bool false
+#- defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabledForLocalFiles -bool false
 
 # Block pop-up windows
 defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
 
-# Enable “Do Not Track”
+# Enable "Do Not Track"
 defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
 
 # Update extensions automatically
@@ -440,48 +449,32 @@ defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
 # Spotlight                                                                   #
 ###############################################################################
 
-# Disable Spotlight indexing for any volume that gets mounted and has not yet
-# been indexed before.
-# Use `sudo mdutil -i off "/Volumes/foo"` to stop indexing any volume.
-## sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
-
-# Change indexing order and disable some search results
-# Yosemite-specific search results (remove them if you are using macOS 10.9 or older):
-#   MENU_DEFINITION
-#   MENU_CONVERSION
-#   MENU_EXPRESSION
-#   MENU_SPOTLIGHT_SUGGESTIONS (send search queries to Apple)
-#   MENU_WEBSEARCH             (send search queries to Apple)
-#   MENU_OTHER
-defaults write com.apple.spotlight orderedItems -array \
-    '{"enabled" = 1;"name" = "APPLICATIONS";}' \
-    '{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
-    '{"enabled" = 1;"name" = "DIRECTORIES";}' \
-    '{"enabled" = 1;"name" = "PDF";}' \
-    '{"enabled" = 1;"name" = "FONTS";}' \
-    '{"enabled" = 1;"name" = "DOCUMENTS";}' \
-    '{"enabled" = 0;"name" = "MESSAGES";}' \
-    '{"enabled" = 1;"name" = "CONTACT";}' \
-    '{"enabled" = 0;"name" = "EVENT_TODO";}' \
-    '{"enabled" = 0;"name" = "IMAGES";}' \
-    '{"enabled" = 0;"name" = "BOOKMARKS";}' \
-    '{"enabled" = 0;"name" = "MUSIC";}' \
-    '{"enabled" = 0;"name" = "MOVIES";}' \
-    '{"enabled" = 0;"name" = "PRESENTATIONS";}' \
-    '{"enabled" = 1;"name" = "SPREADSHEETS";}' \
-    '{"enabled" = 0;"name" = "SOURCE";}' \
-    '{"enabled" = 1;"name" = "MENU_DEFINITION";}' \
-    '{"enabled" = 0;"name" = "MENU_OTHER";}' \
-    '{"enabled" = 1;"name" = "MENU_CONVERSION";}' \
-    '{"enabled" = 1;"name" = "MENU_EXPRESSION";}' \
-    '{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
-    '{"enabled" = 1;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
-# Load new settings before rebuilding the index
-ENABLE killall mds > /dev/null 2>&1
-# Make sure indexing is enabled for the main volume
-#ENABLE sudo mdutil -i on / > /dev/null
-# Rebuild the index from scratch
-#ENABLE sudo mdutil -E / > /dev/null
+# NOTE: com.apple.spotlight orderedItems is ignored since Sonoma (14).
+# Spotlight was rebuilt and this key no longer controls search result ordering.
+# Configure Spotlight categories manually via System Settings → Siri & Spotlight.
+#- defaults write com.apple.spotlight orderedItems -array \
+#-     '{"enabled" = 1;"name" = "APPLICATIONS";}' \
+#-     '{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
+#-     '{"enabled" = 1;"name" = "DIRECTORIES";}' \
+#-     '{"enabled" = 1;"name" = "PDF";}' \
+#-     '{"enabled" = 1;"name" = "FONTS";}' \
+#-     '{"enabled" = 1;"name" = "DOCUMENTS";}' \
+#-     '{"enabled" = 0;"name" = "MESSAGES";}' \
+#-     '{"enabled" = 1;"name" = "CONTACT";}' \
+#-     '{"enabled" = 0;"name" = "EVENT_TODO";}' \
+#-     '{"enabled" = 0;"name" = "IMAGES";}' \
+#-     '{"enabled" = 0;"name" = "BOOKMARKS";}' \
+#-     '{"enabled" = 0;"name" = "MUSIC";}' \
+#-     '{"enabled" = 0;"name" = "MOVIES";}' \
+#-     '{"enabled" = 0;"name" = "PRESENTATIONS";}' \
+#-     '{"enabled" = 1;"name" = "SPREADSHEETS";}' \
+#-     '{"enabled" = 0;"name" = "SOURCE";}' \
+#-     '{"enabled" = 1;"name" = "MENU_DEFINITION";}' \
+#-     '{"enabled" = 0;"name" = "MENU_OTHER";}' \
+#-     '{"enabled" = 1;"name" = "MENU_CONVERSION";}' \
+#-     '{"enabled" = 1;"name" = "MENU_EXPRESSION";}' \
+#-     '{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
+#-     '{"enabled" = 1;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
 
 ###############################################################################
 # Time Machine                                                                #
@@ -536,7 +529,7 @@ defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
 defaults write com.apple.DiskUtility advanced-image-options -bool true
 
 ###############################################################################
-# Mac App Store                                                               #
+# Mac App Store & Software Updates                                            #
 ###############################################################################
 
 # Enable the WebKit Developer Tools in the Mac App Store
@@ -551,17 +544,18 @@ defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
 # Check for software updates daily, not just once per week
 defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
 
-# Download newly available updates in background
-defaults write com.apple.SoftwareUpdate AutomaticDownload -int 1
+# Do NOT download or install updates automatically
+# (prevents surprise macOS major version upgrades)
+defaults write com.apple.SoftwareUpdate AutomaticDownload -int 0
+defaults write com.apple.SoftwareUpdate AutomaticallyInstallAppUpdates -bool false
+defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -int 0
 
-# Install System data files & security updates
-defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -int 1
+# NOTE: com.apple.commerce AutoUpdate is deprecated since Sequoia.
+# App Store auto-update is now controlled via AutomaticallyInstallAppUpdates above.
+#- defaults write com.apple.commerce AutoUpdate -bool true
 
-# Automatically download apps purchased on other Macs
-defaults write com.apple.SoftwareUpdate ConfigDataInstall -int 1
-
-# Turn on app auto-update
-defaults write com.apple.commerce AutoUpdate -bool true
+# NOTE: ConfigDataInstall is MDM-only since Sonoma; writing it as a user has no effect.
+#- defaults write com.apple.SoftwareUpdate ConfigDataInstall -int 1
 
 
 ###############################################################################
