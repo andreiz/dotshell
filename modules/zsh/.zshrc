@@ -14,12 +14,14 @@ fi
 
 antigen use oh-my-zsh
 
-antigen bundle brew
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    antigen bundle brew
+    antigen bundle osx
+fi
 antigen bundle command-not-found
 antigen bundle common-aliases
 antigen bundle git
 antigen bundle git-extras
-antigen bundle osx
 antigen bundle z
 antigen bundle zsh-users/zsh-syntax-highlighting
 antigen bundle zsh-users/zsh-history-substring-search ./zsh-history-substring-search.zsh
