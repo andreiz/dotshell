@@ -1,0 +1,69 @@
+# dotshell
+
+Modular dotfile management for macOS and Linux — Stow-based, zero-framework, one command to feel at home.
+
+## Quick Start
+
+### Fresh machine
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/andreiz/dotshell/main/bootstrap.sh | bash
+cd ~/projects/dotshell
+./install.sh all
+```
+
+### Already have git and stow
+
+```bash
+git clone git@github.com:andreiz/dotshell.git ~/projects/dotshell
+cd ~/projects/dotshell
+./install.sh all
+```
+
+## Usage
+
+```bash
+./install.sh all              # install everything
+./install.sh list             # see available modules
+./install.sh vim zsh git      # install specific modules
+```
+
+## Modules
+
+| Module | Manages | Platform |
+|--------|---------|----------|
+| `zsh` | `.zshrc`, `.zsh/` config dir, antigen, powerlevel10k | all |
+| `vim` | `.vimrc` | all |
+| `git` | `.gitconfig`, `.gitignore_global` | all |
+| `ssh` | `.ssh/config` | all |
+| `karabiner` | `.config/karabiner/karabiner.json` | macOS |
+| `macos` | System defaults, login items | macOS |
+
+## How It Works
+
+Each module is a directory under `modules/` whose layout mirrors `$HOME`. [GNU Stow](https://www.gnu.org/software/stow/) creates symlinks into `~` automatically.
+
+OS-specific files live in `overlays/darwin/` or `overlays/linux/` and are layered on top of the base module at install time.
+
+Modules that need more than symlinking (e.g., installing packages, running `defaults` commands) define a `post_install()` hook in `module.sh`.
+
+## Adding a Module
+
+1. Create `modules/<name>/` with files mirroring their `$HOME` paths
+2. Optionally create `modules/<name>/module.sh` for post-install logic or OS restrictions
+3. Optionally create `overlays/darwin/<name>/` or `overlays/linux/<name>/` for OS-specific files
+4. Run `./install.sh <name>`
+
+## Structure
+
+```
+dotshell/
+├── bootstrap.sh        # fresh machine setup
+├── install.sh          # orchestrator
+├── lib/
+│   └── common.sh       # OS detection, logging
+├── modules/            # one dir per tool, mirrors $HOME
+└── overlays/
+    ├── darwin/         # macOS-specific additions
+    └── linux/          # Linux-specific additions
+```
