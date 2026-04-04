@@ -102,7 +102,7 @@ case "$1" in
         for module in $(list_modules); do
             local_requires=""
             if [[ -f "${DOTSHELL_DIR}/modules/${module}/module.sh" ]]; then
-                local_requires=$(grep -oP '(?<=requires_os=").*?(?=")' "${DOTSHELL_DIR}/modules/${module}/module.sh" 2>/dev/null || true)
+                local_requires=$(grep -o 'requires_os="[^"]*"' "${DOTSHELL_DIR}/modules/${module}/module.sh" 2>/dev/null | cut -d'"' -f2 || true)
             fi
             if [[ -n "$local_requires" ]]; then
                 echo "  ${module} (${local_requires} only)"
