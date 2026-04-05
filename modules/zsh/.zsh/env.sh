@@ -20,3 +20,12 @@ export FZF_CTRL_T_COMMAND="fd $FD_OPTIONS"
 export FZF_ALT_C_COMMAND="fd --type d $FD_OPTIONS"
 
 export BAT_THEME="TwoDark"
+
+# History
+HISTFILE=~/.zsh_history
+HISTSIZE=50000
+SAVEHIST=50000
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_VERIFY
+setopt SHARE_HISTORY
