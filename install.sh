@@ -61,7 +61,7 @@ install_module() {
 
     # Stow the module (unless no_stow is set)
     if [[ "$no_stow" != "true" ]]; then
-        if stow -d "${DOTSHELL_DIR}/modules" -t "$HOME" --no-folding "$module"; then
+        if stow -d "${DOTSHELL_DIR}/modules" -t "$HOME" --no-folding --ignore='module\.sh' "$module"; then
             substep "Stowed ${module}"
         else
             error "Failed to stow ${module}"
@@ -72,7 +72,7 @@ install_module() {
     # Apply OS overlay if it exists
     local overlay_dir="${DOTSHELL_DIR}/overlays/${DOTSHELL_OS}/${module}"
     if [[ -d "$overlay_dir" ]]; then
-        if stow -d "${DOTSHELL_DIR}/overlays/${DOTSHELL_OS}" -t "$HOME" --no-folding "$module"; then
+        if stow -d "${DOTSHELL_DIR}/overlays/${DOTSHELL_OS}" -t "$HOME" --no-folding --ignore='module\.sh' "$module"; then
             substep "Applied ${DOTSHELL_OS} overlay for ${module}"
         else
             error "Failed to apply overlay for ${module}"
