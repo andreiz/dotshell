@@ -11,15 +11,22 @@ post_install() {
         fi
     fi
 
-    # Install vim-plug if not present
-    local plug_path="$HOME/.vim/autoload/plug.vim"
-    if [[ ! -f "$plug_path" ]]; then
-        info "Installing vim-plug..."
-        curl -fLo "$plug_path" --create-dirs \
-            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    local opt_dir="$HOME/.vim/pack/plugins/opt"
+    local start_dir="$HOME/.vim/pack/plugins/start"
+    mkdir -p "$opt_dir" "$start_dir"
+
+    if [[ ! -d "$opt_dir/everforest" ]]; then
+        info "Installing everforest..."
+        git clone --depth 1 https://github.com/sainnhe/everforest "$opt_dir/everforest"
     fi
 
-    # Install plugins headlessly
-    info "Installing vim plugins..."
-    vim +PlugInstall +qall 2>/dev/null
+    if [[ ! -d "$start_dir/vim-airline" ]]; then
+        info "Installing vim-airline..."
+        git clone --depth 1 https://github.com/vim-airline/vim-airline "$start_dir/vim-airline"
+    fi
+
+    if [[ ! -d "$start_dir/vim-airline-themes" ]]; then
+        info "Installing vim-airline-themes..."
+        git clone --depth 1 https://github.com/vim-airline/vim-airline-themes "$start_dir/vim-airline-themes"
+    fi
 }
