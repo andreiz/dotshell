@@ -13,9 +13,9 @@ export FZF_DEFAULT_OPTS="
 --inline-info
 --color='hl:148,hl+:154,pointer:032,marker:010,bg+:237,gutter:008'
 --preview='([[ -d {} ]] && (tree -C {} | less)) || ([[ \$(file --mime {}) =~ binary ]] && echo {} is a binary file) || (bat --style=numbers --color=always {} || cat {}) 2> /dev/null | head -300' --preview-window='right:hidden:wrap'
---bind='?:toggle-preview,ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-a:select-all+accept,ctrl-y:execute-silent(echo {+} | pbcopy)'"
+--bind='?:toggle-preview,ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-a:select-all+accept'"
 
-export FZF_DEFAULT_COMMAND="git ls-files --cached --others --exclude-standard | fd --type f --type l $FD_OPTIONS"
+export FZF_DEFAULT_COMMAND="(git ls-files --cached --others --exclude-standard 2>/dev/null || fd --type f --type l $FD_OPTIONS)"
 export FZF_CTRL_T_COMMAND="fd $FD_OPTIONS"
 export FZF_ALT_C_COMMAND="fd --type d $FD_OPTIONS"
 

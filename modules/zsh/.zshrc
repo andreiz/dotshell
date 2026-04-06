@@ -16,7 +16,7 @@ antigen use oh-my-zsh
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     antigen bundle brew
-    antigen bundle osx
+    antigen bundle macos
 fi
 antigen bundle command-not-found
 antigen bundle common-aliases
@@ -44,9 +44,9 @@ setopt correct
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Optional tool integrations (loaded if present)
-[[ -f ~/.config/broot/launcher/bash/br ]] && source ~/.config/broot/launcher/bash/br
+[[ -f ~/.config/broot/launcher/zsh/br ]] && source ~/.config/broot/launcher/zsh/br
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ] && \. "$HOMEBREW_PREFIX/opt/nvm/nvm.sh"
-[ -s "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm" ] && \. "$HOMEBREW_PREFIX/opt/nvm/etc/bash_completion.d/nvm"
+[ -s "${HOMEBREW_PREFIX:-}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX:-}/opt/nvm/nvm.sh"
+[ -s "${HOMEBREW_PREFIX:-}/opt/nvm/etc/bash_completion.d/nvm" ] && \. "${HOMEBREW_PREFIX:-}/opt/nvm/etc/bash_completion.d/nvm"
