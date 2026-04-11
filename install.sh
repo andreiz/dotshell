@@ -4,7 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib/common.sh"
 
-BACKUP_SUFFIX=".bak.$(date +%Y%m%d_%H%M%S)"
+BACKUP_SUFFIX=".$(date +%Y%m%d_%H%M%S).bak"
+BACKED_UP=()
 
 usage() {
     echo "Usage: ./install.sh <module ...> | all | list"
@@ -42,7 +43,7 @@ backup_existing() {
         local target="${HOME}/${rel}"
         if [[ -f "$target" && ! -L "$target" ]]; then
             mv "$target" "${target}${BACKUP_SUFFIX}"
-            substep "Backed up ~/${rel} → ~/${rel}${BACKUP_SUFFIX}"
+            BACKED_UP+=("~/${rel}${BACKUP_SUFFIX}")
         fi
     done < <(find "$source_dir" -type f ! -name 'module.sh' -print0)
 }
@@ -140,3 +141,10 @@ case "$1" in
         done
         ;;
 esac
+
+if [[ ${#BACKED_UP[@]} -gt 0 ]]; then
+    info "Backed up ${#BACKED_UP[@]} existing file(s):"
+    for f in "${BACKED_UP[@]}"; do
+        substep "$f"
+    done
+fi
