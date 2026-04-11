@@ -4,6 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/lib/common.sh"
 
+BACKUP_SUFFIX=".bak.$(date +%Y%m%d_%H%M%S)"
+
 usage() {
     echo "Usage: ./install.sh <module ...> | all | list"
     echo ""
@@ -29,6 +31,20 @@ list_modules() {
         [[ -d "$dir" ]] || continue
         basename "$dir"
     done
+}
+
+# Back up any real files that stow would overwrite
+backup_existing() {
+    local source_dir="$1"
+
+    while IFS= read -r -d '' file; do
+        local rel="${file#${source_dir}/}"
+        local target="${HOME}/${rel}"
+        if [[ -f "$target" && ! -L "$target" ]]; then
+            mv "$target" "${target}${BACKUP_SUFFIX}"
+            substep "Backed up ~/${rel} → ~/${rel}${BACKUP_SUFFIX}"
+        fi
+    done < <(find "$source_dir" -type f ! -name 'module.sh' -print0)
 }
 
 # Install a single module
@@ -61,6 +77,7 @@ install_module() {
 
     # Stow the module (unless no_stow is set)
     if [[ "$no_stow" != "true" ]]; then
+        backup_existing "${module_dir}"
         if stow -d "${DOTSHELL_DIR}/modules" -t "$HOME" --no-folding --ignore='module\.sh' "$module"; then
             substep "Stowed ${module}"
         else
@@ -72,6 +89,7 @@ install_module() {
     # Apply OS overlay if it exists
     local overlay_dir="${DOTSHELL_DIR}/overlays/${DOTSHELL_OS}/${module}"
     if [[ -d "$overlay_dir" ]]; then
+        backup_existing "${overlay_dir}"
         if stow -d "${DOTSHELL_DIR}/overlays/${DOTSHELL_OS}" -t "$HOME" --no-folding --ignore='module\.sh' "$module"; then
             substep "Applied ${DOTSHELL_OS} overlay for ${module}"
         else
