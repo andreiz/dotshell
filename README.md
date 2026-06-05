@@ -32,7 +32,7 @@ cd ~/projects/dotshell
 
 | Module | Manages | Platform |
 |--------|---------|----------|
-| `zsh` | `.zshrc`, `.zsh/` config dir, antigen, powerlevel10k | all |
+| `zsh` | `.zshrc`, `.zsh/` config dir, `.p10k.zsh`, antigen, powerlevel10k | all |
 | `vim` | `.vimrc` | all |
 | `git` | `.gitconfig`, `.gitignore_global` | all |
 | `ssh` | `.ssh/config` | all |
