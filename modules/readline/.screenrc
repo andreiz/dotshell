@@ -1,0 +1,4 @@
+escape ^Nn
+startup_message off
+defscrollback 2048
+defutf8 on

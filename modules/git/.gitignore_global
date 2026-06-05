@@ -13,3 +13,6 @@ Thumbs.db
 .Spotlight-V100
 .Trashes
 
+# Claude Code local settings
+**/.claude/settings.local.json
+

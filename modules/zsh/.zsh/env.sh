@@ -1,3 +1,6 @@
+# XDG Base Directory — keep CLI tool config under ~/.config (tea, bottom, …).
+export XDG_CONFIG_HOME="$HOME/.config"
+
 export TZ=America/Los_Angeles
 export EDITOR=vim
 export CDPATH=~/
