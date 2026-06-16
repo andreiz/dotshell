@@ -30,8 +30,12 @@ antigen theme romkatv/powerlevel10k
 
 antigen apply
 
-# Source all config files from ~/.zsh/
+# Source interactive-only config from ~/.zsh/.
+# Env fragments (env*.sh, ssh-agent*.sh) are loaded earlier by .zshenv so that
+# non-interactive shells get them too — skip them here to avoid double-sourcing
+# (re-running env.macos.sh would duplicate PATH and re-eval pyenv).
 for f in ~/.zsh/*.sh; do
+    case "${f:t}" in env.sh|env.*.sh|ssh-agent.*.sh) continue ;; esac
     [[ -f "$f" ]] && source "$f"
 done
 
