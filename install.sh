@@ -26,20 +26,22 @@ check_dependencies() {
 }
 
 # Parse CLI args: separate module names from flags.
-# Sets global MODULES (array) and DOTSHELL_EXTRA; exports DOTSHELL_EXTRA.
+# Sets globals MODULES (array), DOTSHELL_EXTRA, DOTSHELL_FORCE_CASKS; exports the latter two.
 parse_args() {
     MODULES=()
     DOTSHELL_EXTRA=""
+    DOTSHELL_FORCE_CASKS=""
     local arg
     for arg in "$@"; do
         case "$arg" in
-            --extra=*) DOTSHELL_EXTRA="${arg#--extra=}" ;;
-            --extra)   error "--extra requires a value, e.g. --extra=laptop"; exit 1 ;;
-            --*)       error "Unknown option: ${arg}"; exit 1 ;;
-            *)         MODULES+=("$arg") ;;
+            --extra=*)     DOTSHELL_EXTRA="${arg#--extra=}" ;;
+            --extra)       error "--extra requires a value, e.g. --extra=laptop"; exit 1 ;;
+            --force-casks) DOTSHELL_FORCE_CASKS=1 ;;
+            --*)           error "Unknown option: ${arg}"; exit 1 ;;
+            *)             MODULES+=("$arg") ;;
         esac
     done
-    export DOTSHELL_EXTRA
+    export DOTSHELL_EXTRA DOTSHELL_FORCE_CASKS
 }
 
 # True (skip) only for optional modules invoked via the `all` loop.

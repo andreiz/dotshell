@@ -7,8 +7,15 @@ optional=true
 post_install() {
     local brewfile="${MODULE_DIR}/Brewfile"
 
+    # Opt-in (--force-casks): pass --force to `brew bundle install` so casks
+    # overwrite/adopt a pre-existing app at a different version. Off by default
+    # (never overwrites apps unless asked). Scalar (not array) keeps it safe
+    # under `set -u` on bash 3.2.
+    local force_flag=""
+    [[ -n "${DOTSHELL_FORCE_CASKS:-}" ]] && force_flag="--force"
+
     info "Installing base Brewfile packages"
-    brew bundle install --file="$brewfile"
+    brew bundle install --file="$brewfile" ${force_flag}
 
     if [[ -n "${DOTSHELL_EXTRA:-}" ]]; then
         local extra_file="${MODULE_DIR}/Brewfile.${DOTSHELL_EXTRA}"
@@ -17,7 +24,7 @@ post_install() {
             return 1
         fi
         info "Installing extra Brewfile: ${DOTSHELL_EXTRA}"
-        brew bundle install --file="$extra_file"
+        brew bundle install --file="$extra_file" ${force_flag}
     fi
 
     # Drift check: compare installed packages against the UNION of ALL Brewfiles

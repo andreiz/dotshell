@@ -31,10 +31,13 @@ cd ~/projects/dotshell
 The `brew` module is **opt-in** — it is excluded from `./install.sh all` and must be run explicitly. It installs packages from a curated Brewfile, with optional per-machine extras:
 
 ```bash
-./install.sh brew                    # base Brewfile only
-./install.sh brew --extra=laptop     # base + modules/brew/Brewfile.laptop
-./install.sh brew --extra=desktop    # base + modules/brew/Brewfile.desktop
+./install.sh brew                          # base Brewfile only
+./install.sh brew --extra=laptop           # base + modules/brew/Brewfile.laptop
+./install.sh brew --extra=desktop          # base + modules/brew/Brewfile.desktop
+./install.sh brew --extra=desktop --force-casks   # also overwrite/adopt pre-existing apps
 ```
+
+`--force-casks` passes `--force` to `brew bundle install` so a cask overwrites/adopts an app that's already in `/Applications` at a different version (otherwise brew aborts that cask with a version-mismatch error). It's off by default — nothing in `/Applications` is overwritten unless you ask.
 
 Mac App Store apps are not managed by `brew bundle`; install them manually (the base `Brewfile` lists them in a comment). After installing, the module does a drift check against the **union of all Brewfiles** (base + every `Brewfile.*`, regardless of `--extra`, so another machine's packages aren't flagged) and, if anything installed isn't tracked, prints a one-line pointer to review it with `brew bundle cleanup` — it never uninstalls anything.
 

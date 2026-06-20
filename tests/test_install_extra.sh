@@ -12,6 +12,12 @@ parse_args all
 assert_eq "${MODULES[*]}" "all" "all is treated as a module arg"
 assert_eq "$DOTSHELL_EXTRA" "" "extra empty when flag absent"
 
+parse_args mod --force-casks
+assert_eq "${MODULES[*]}" "mod" "--force-casks stripped from modules"
+assert_eq "$DOTSHELL_FORCE_CASKS" "1" "--force-casks parsed"
+parse_args mod
+assert_eq "$DOTSHELL_FORCE_CASKS" "" "force-casks empty when flag absent"
+
 should_skip_optional all true      && r=skip || r=run; assert_eq "$r" skip "optional skipped under all"
 should_skip_optional explicit true && r=skip || r=run; assert_eq "$r" run  "optional runs when explicit"
 should_skip_optional all ""        && r=skip || r=run; assert_eq "$r" run  "non-optional runs under all"

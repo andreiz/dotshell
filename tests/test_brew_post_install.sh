@@ -15,6 +15,8 @@ printf 'cask "laptop1"\n'  > "$MODULE_DIR/Brewfile.laptop"
 
 source "$DIR/../modules/brew/module.sh"
 
+export DOTSHELL_FORCE_CASKS=""   # default off unless a case opts in
+
 # Case 1: base only, cleanup reports no drift
 export DOTSHELL_EXTRA=""
 export BREW_CLEANUP_RC=0
@@ -54,5 +56,15 @@ assert_contains "$log" "bundle install --file=$MODULE_DIR/Brewfile.laptop" "extr
 export DOTSHELL_EXTRA="nope"
 post_install >/dev/null 2>&1; rc=$?
 assert_eq "$rc" "1" "missing extra Brewfile returns non-zero"
+
+# Case 5: --force-casks adds --force to install (opt-in)
+: > "$BREW_LOG"
+export DOTSHELL_EXTRA=""
+export BREW_CLEANUP_RC=0
+export DOTSHELL_FORCE_CASKS=1
+post_install >/dev/null
+log="$(cat "$BREW_LOG")"
+assert_contains "$log" "bundle install --file=$MODULE_DIR/Brewfile --force" "force-casks passes --force to bundle install"
+export DOTSHELL_FORCE_CASKS=""
 
 finish
