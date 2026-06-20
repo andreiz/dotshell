@@ -84,11 +84,19 @@ install_module() {
     # Reset per-module variables
     local requires_os=""
     local no_stow=""
+    local optional=""
+    local context="${2:-explicit}"
 
-    # Source module.sh if it exists (sets requires_os, no_stow, defines post_install)
+    # Source module.sh if it exists (sets requires_os, no_stow, optional, defines post_install)
     unset -f post_install 2>/dev/null
     if [[ -f "${module_dir}/module.sh" ]]; then
         source "${module_dir}/module.sh"
+    fi
+
+    # Skip optional modules when running `all`; they must be invoked explicitly.
+    if should_skip_optional "$context" "${optional:-}"; then
+        substep "Skipping '${module}' (optional; run explicitly: ./install.sh ${module})"
+        return 0
     fi
 
     # Check OS restriction
