@@ -44,6 +44,7 @@ if [[ "${1:-}" == "bundle" && "${2:-}" == "cleanup" ]]; then
     for a in "$@"; do
         case "$a" in --file=*) cp "${a#--file=}" "$BREW_COMBINED" ;; esac
     done
+    exit "${BREW_CLEANUP_RC:-0}"   # mimic: 1 == drift exists, 0 == clean
 fi
 exit 0
 STUB

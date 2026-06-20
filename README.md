@@ -36,7 +36,7 @@ The `brew` module is **opt-in** — it is excluded from `./install.sh all` and m
 ./install.sh brew --extra=desktop    # base + modules/brew/Brewfile.desktop
 ```
 
-Mac App Store apps are not managed by `brew bundle`; install them manually (the base `Brewfile` lists them in a comment). After install, the module prints a dry-run drift report of packages installed but not in your Brewfile(s) — it never uninstalls anything.
+Mac App Store apps are not managed by `brew bundle`; install them manually (the base `Brewfile` lists them in a comment). After installing, the module does a drift check against the **union of all Brewfiles** (base + every `Brewfile.*`, regardless of `--extra`, so another machine's packages aren't flagged) and, if anything installed isn't tracked, prints a one-line pointer to review it with `brew bundle cleanup` — it never uninstalls anything.
 
 ## Modules
 
