@@ -25,6 +25,31 @@ check_dependencies() {
     fi
 }
 
+# Parse CLI args: separate module names from flags.
+# Sets globals MODULES (array), DOTSHELL_EXTRA, DOTSHELL_FORCE_CASKS; exports the latter two.
+parse_args() {
+    MODULES=()
+    DOTSHELL_EXTRA=""
+    DOTSHELL_FORCE_CASKS=""
+    local arg
+    for arg in "$@"; do
+        case "$arg" in
+            --extra=*)     DOTSHELL_EXTRA="${arg#--extra=}" ;;
+            --extra)       error "--extra requires a value, e.g. --extra=laptop"; exit 1 ;;
+            --force-casks) DOTSHELL_FORCE_CASKS=1 ;;
+            --*)           error "Unknown option: ${arg}"; exit 1 ;;
+            *)             MODULES+=("$arg") ;;
+        esac
+    done
+    export DOTSHELL_EXTRA DOTSHELL_FORCE_CASKS
+}
+
+# True (skip) only for optional modules invoked via the `all` loop.
+should_skip_optional() {
+    local context="$1" optional_flag="$2"
+    [[ "$context" == "all" && "$optional_flag" == "true" ]]
+}
+
 # List all module directory names
 list_modules() {
     local dir
@@ -61,11 +86,19 @@ install_module() {
     # Reset per-module variables
     local requires_os=""
     local no_stow=""
+    local optional=""
+    local context="${2:-explicit}"
 
-    # Source module.sh if it exists (sets requires_os, no_stow, defines post_install)
+    # Source module.sh if it exists (sets requires_os, no_stow, optional, defines post_install)
     unset -f post_install 2>/dev/null
     if [[ -f "${module_dir}/module.sh" ]]; then
         source "${module_dir}/module.sh"
+    fi
+
+    # Skip optional modules when running `all`; they must be invoked explicitly.
+    if should_skip_optional "$context" "${optional:-}"; then
+        substep "Skipping '${module}' (optional; run explicitly: ./install.sh ${module})"
+        return 0
     fi
 
     # Check OS restriction
@@ -111,40 +144,56 @@ install_module() {
 }
 
 # Main
-[[ $# -eq 0 ]] && usage
+main() {
+    parse_args "$@"
 
-check_dependencies
+    [[ ${#MODULES[@]} -eq 0 ]] && usage
 
-case "$1" in
-    list)
-        echo "Available modules:"
-        for module in $(list_modules); do
-            local_requires=""
-            if [[ -f "${DOTSHELL_DIR}/modules/${module}/module.sh" ]]; then
-                local_requires=$(grep -o 'requires_os="[^"]*"' "${DOTSHELL_DIR}/modules/${module}/module.sh" 2>/dev/null | cut -d'"' -f2 || true)
-            fi
-            if [[ -n "$local_requires" ]]; then
-                echo "  ${module} (${local_requires} only)"
-            else
-                echo "  ${module}"
-            fi
-        done
-        ;;
-    all)
-        for module in $(list_modules); do
-            install_module "$module"
-        done
-        ;;
-    *)
-        for module in "$@"; do
-            install_module "$module"
-        done
-        ;;
-esac
+    check_dependencies
 
-if [[ ${#BACKED_UP[@]} -gt 0 ]]; then
-    info "Backed up ${#BACKED_UP[@]} existing file(s):"
-    for f in "${BACKED_UP[@]}"; do
-        substep "$f"
-    done
+    case "${MODULES[0]}" in
+        list)
+            echo "Available modules:"
+            for module in $(list_modules); do
+                local_requires=""
+                local_optional=""
+                if [[ -f "${DOTSHELL_DIR}/modules/${module}/module.sh" ]]; then
+                    local_requires=$(grep -o 'requires_os="[^"]*"' "${DOTSHELL_DIR}/modules/${module}/module.sh" 2>/dev/null | cut -d'"' -f2 || true)
+                    grep -q 'optional=true' "${DOTSHELL_DIR}/modules/${module}/module.sh" 2>/dev/null && local_optional="optional"
+                fi
+                local tags=""
+                [[ -n "$local_requires" ]] && tags="${local_requires} only"
+                [[ -n "$local_optional" ]] && tags="${tags:+${tags}, }optional"
+                if [[ -n "$tags" ]]; then
+                    echo "  ${module} (${tags})"
+                else
+                    echo "  ${module}"
+                fi
+            done
+            ;;
+        all)
+            for module in $(list_modules); do
+                install_module "$module" "all"
+            done
+            ;;
+        *)
+            for module in "${MODULES[@]}"; do
+                install_module "$module" "explicit"
+            done
+            ;;
+    esac
+
+    if [[ ${#BACKED_UP[@]} -gt 0 ]]; then
+        info "Backed up ${#BACKED_UP[@]} existing file(s):"
+        for f in "${BACKED_UP[@]}"; do
+            substep "$f"
+        done
+    fi
+}
+
+# Run main only when executed directly, not when sourced (enables tests).
+# Use an `if` (not `&&`) so a false condition returns 0 and does not trip `set -e`
+# when this file is sourced by the test suite.
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
 fi

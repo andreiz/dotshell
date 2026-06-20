@@ -1,0 +1,19 @@
+# dotshell desktop-only packages (layered on top of base Brewfile).
+
+# Formulae
+brew "esphome"
+brew "googleworkspace-cli"
+brew "icloudpd"
+brew "imessage-exporter"
+brew "iperf3"
+brew "llm"
+brew "micasa"
+
+# Casks
+cask "ha-menu"
+cask "calibre"
+cask "balenaetcher"
+cask "raspberry-pi-imager"
+cask "openscad"
+cask "fastrawviewer"
+cask "transmit"
