@@ -11,6 +11,11 @@ detect_os() {
 DOTSHELL_OS="$(detect_os)"
 DOTSHELL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# Per-machine state directory (NOT synced via the repo). Used for run-once markers.
+dotshell_state_dir() {
+    echo "${XDG_STATE_HOME:-$HOME/.local/state}/dotshell"
+}
+
 # Logging helpers (colored output)
 info() {
     tput bold || true; tput setaf 4 || true
