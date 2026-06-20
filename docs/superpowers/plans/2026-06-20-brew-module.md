@@ -502,15 +502,33 @@ diff <(grep -oE '^(brew|cask|tap) "[^"]+"' /tmp/brewfile.dump | sort) \
 ```
 Expected: `<` lines = present now but not in old file (the additions to triage); `>` lines = in old file but no longer installed.
 
-- [ ] **Step 3: Triage with the user (collaborative)**
+- [ ] **Step 3: Generate an editable triage file**
 
-Present the dumped formulae and casks grouped. For each, decide:
-- **base** (`modules/brew/Brewfile`) — wanted on every machine (most CLI formulae, cross-machine apps).
-- **desktop** (`modules/brew/Brewfile.desktop`) — desktop-only formulae/casks.
-- **laptop** (`modules/brew/Brewfile.laptop`) — laptop-only formulae/casks.
-- **drop** — one-offs/experiments not worth tracking.
+Write `modules/brew/triage.md` listing every dumped formula and cask, each on its
+own line, **pre-tagged** with the implementer's best-guess bucket and a one-line
+note. Format one entry per line:
 
-Also surface the old file's commented-out entries (e.g. `bettertouchtool`, `betterzip`, `displaycal`, `fastrawviewer`, `photosync`, `transmit`, `viscosity`, `xee`, `zoom`) and confirm they stay excluded.
+```
+[base]    brew "ripgrep"      # fast grep; cross-machine CLI
+[base]    cask "1password"    # password manager
+[drop?]   cask "heynote"      # scratch-pad app — one-off? confirm
+[laptop?] cask "daisydisk"    # disk viz — laptop or desktop?
+```
+
+Bucketing rules for the pre-tags:
+- CLI **formulae** → `[base]` by default.
+- **Casks** that are clearly cross-machine (browsers, 1password, dropbox) → `[base]`;
+  GUI apps whose machine is unclear → `[laptop?]`/`[desktop?]` (the `?` means "guess —
+  user confirms").
+- Likely one-offs/experiments → `[drop?]` with a reason.
+- Append a commented section listing the old file's previously-disabled entries
+  (`bettertouchtool`, `betterzip`, `displaycal`, `fastrawviewer`, `photosync`,
+  `transmit`, `viscosity`, `xee`, `zoom`) so the user can re-enable any by tagging them.
+
+The user edits the tags inline (changing `[base]`/`[desktop]`/`[laptop]`/`[drop]`,
+removing the `?`), saves, and tells the implementer to continue. The implementer
+reads the final tags back to drive Steps 4-5. `triage.md` is a scratch artifact —
+**delete it after the Brewfiles are written** (do not commit it).
 
 - [ ] **Step 4: Write `modules/brew/Brewfile` (base)**
 
@@ -565,9 +583,11 @@ brew bundle check --file=modules/brew/Brewfile && echo "base satisfied on this m
 ```
 Expected: all four echo lines print (base "check" passes because base packages are installed on the current machine). If `check` reports missing base packages, move them out of base or install them — base must be satisfiable on the current machine.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 7: Delete the scratch triage file and commit**
 
 ```bash
+rm -f modules/brew/triage.md
+git status --short modules/brew/        # confirm triage.md is gone, only Brewfiles staged
 git add modules/brew/Brewfile modules/brew/Brewfile.desktop modules/brew/Brewfile.laptop
 git commit -m "feat(brew): add curated base + per-machine Brewfiles"
 ```
