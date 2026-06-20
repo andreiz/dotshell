@@ -15,11 +15,14 @@ source "$DIR/../modules/brew/module.sh"
 
 # Case 1: base only
 export DOTSHELL_EXTRA=""
-post_install
+post_install; rc=$?
 log="$(cat "$BREW_LOG")"
+assert_eq "$rc" "0" "post_install succeeds (drift report does not abort it)"
 assert_contains "$log" "bundle install --file=$MODULE_DIR/Brewfile" "base install invoked"
 assert_contains "$log" "bundle cleanup" "drift report invoked"
-assert_contains "$log" "--dry-run" "cleanup is dry-run only"
+# `brew bundle cleanup` has no --dry-run flag; the no---force default IS the dry run.
+assert_not_contains "$log" "--dry-run" "cleanup does not pass invalid --dry-run"
+assert_not_contains "$log" "--force" "cleanup never uses --force (never uninstalls)"
 
 # Case 2: with extra
 : > "$BREW_LOG"

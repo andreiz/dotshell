@@ -24,6 +24,16 @@ assert_contains() {
     fi
 }
 
+assert_not_contains() {
+    TESTS_RUN=$((TESTS_RUN + 1))
+    if [[ "$1" == *"$2"* ]]; then
+        echo "FAIL: $3: [$1] unexpectedly contains [$2]"
+        TESTS_FAILED=$((TESTS_FAILED + 1))
+    else
+        echo "ok: $3"
+    fi
+}
+
 # make_brew_stub <dir>: writes a fake `brew` that logs invocations to $BREW_LOG
 # and, for `bundle cleanup`, copies the --file target to $BREW_COMBINED.
 make_brew_stub() {

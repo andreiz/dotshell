@@ -23,11 +23,12 @@ post_install() {
     fi
 
     # Drift report: list packages installed but not in the Brewfile(s).
-    # Dry-run only — nothing is uninstalled.
+    # `brew bundle cleanup` without --force is a dry run (lists only, removes
+    # nothing) and returns exit 1 when anything would be removed, so `|| true`.
     local combined
     combined="$(mktemp)"
     cat "${files[@]}" > "$combined"
     substep "Installed but not in your Brewfile(s) — review (nothing removed):"
-    brew bundle cleanup --file="$combined" --dry-run || true
+    brew bundle cleanup --file="$combined" || true
     rm -f "$combined"
 }
