@@ -505,30 +505,56 @@ Expected: `<` lines = present now but not in old file (the additions to triage);
 - [ ] **Step 3: Generate an editable triage file**
 
 Write `modules/brew/triage.md` listing every dumped formula and cask, each on its
-own line, **pre-tagged** with the implementer's best-guess bucket and a one-line
-note. Format one entry per line:
+own line **pre-tagged** with a single-letter bucket and a one-line note. Entries
+are **grouped by bucket** under section headers (so same-bucket items are adjacent
+for scanning); the bracket tag is the source of truth, the grouping is cosmetic.
 
+Tag legend (kept at the top of the file):
 ```
-[base]    brew "ripgrep"      # fast grep; cross-machine CLI
-[base]    cask "1password"    # password manager
-[drop?]   cask "heynote"      # scratch-pad app — one-off? confirm
-[laptop?] cask "daisydisk"    # disk viz — laptop or desktop?
+# Triage — edit the [tag] on each line, save, then tell me to continue.
+# [b] = base (all machines)   [d] = desktop   [l] = laptop   [r] = drop (don't track)
+# A trailing "?" means it's my guess — confirm or change it.
+```
+
+Layout — group under headers, short tags, one entry per line:
+```
+## base
+[b]  brew "ripgrep"      # fast grep; cross-machine CLI
+[b]  cask "1password"    # password manager
+
+## desktop?  (my guesses — confirm machine)
+[d?] cask "daisydisk"    # disk viz — desktop or laptop?
+
+## laptop?
+[l?] cask "<app>"        # ...
+
+## drop?  (one-offs — confirm removal)
+[r?] cask "heynote"      # scratch-pad app — keep?
+
+## previously disabled in old Brewfile (tag [b]/[d]/[l] to re-enable)
+[r]  cask "zoom"
+[r]  cask "transmit"
+[r]  cask "bettertouchtool"
+[r]  cask "betterzip"
+[r]  cask "displaycal"
+[r]  cask "fastrawviewer"
+[r]  cask "photosync"
+[r]  cask "viscosity"
+[r]  cask "xee"
 ```
 
 Bucketing rules for the pre-tags:
-- CLI **formulae** → `[base]` by default.
-- **Casks** that are clearly cross-machine (browsers, 1password, dropbox) → `[base]`;
-  GUI apps whose machine is unclear → `[laptop?]`/`[desktop?]` (the `?` means "guess —
-  user confirms").
-- Likely one-offs/experiments → `[drop?]` with a reason.
-- Append a commented section listing the old file's previously-disabled entries
-  (`bettertouchtool`, `betterzip`, `displaycal`, `fastrawviewer`, `photosync`,
-  `transmit`, `viscosity`, `xee`, `zoom`) so the user can re-enable any by tagging them.
+- CLI **formulae** → `[b]` by default.
+- **Casks** clearly cross-machine (browsers, 1password, dropbox) → `[b]`; GUI apps
+  whose machine is unclear → `[d?]`/`[l?]`.
+- Likely one-offs/experiments → `[r?]` with a reason.
+- Old file's previously-disabled entries → `[r]` (re-enable by retagging).
 
-The user edits the tags inline (changing `[base]`/`[desktop]`/`[laptop]`/`[drop]`,
-removing the `?`), saves, and tells the implementer to continue. The implementer
-reads the final tags back to drive Steps 4-5. `triage.md` is a scratch artifact —
-**delete it after the Brewfiles are written** (do not commit it).
+The user edits the single-letter tags inline (and may move lines between sections
+or not — only the `[tag]` matters), saves, and tells the implementer to continue.
+The implementer parses the final `[b]/[d]/[l]/[r]` tags to drive Steps 4-5.
+`triage.md` is a scratch artifact — **delete it after the Brewfiles are written**
+(do not commit it).
 
 - [ ] **Step 4: Write `modules/brew/Brewfile` (base)**
 
