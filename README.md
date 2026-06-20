@@ -41,6 +41,8 @@ The `brew` module is **opt-in** — it is excluded from `./install.sh all` and m
 
 Mac App Store apps are not managed by `brew bundle`; install them manually (the base `Brewfile` lists them in a comment). After installing, the module does a drift check against the **union of all Brewfiles** (base + every `Brewfile.*`, regardless of `--extra`, so another machine's packages aren't flagged) and, if anything installed isn't tracked, prints a one-line pointer to review it with `brew bundle cleanup` — it never uninstalls anything.
 
+The `duti` module sets default macOS apps for file types from `modules/duti/duti.conf` (lines of `<bundle-id>  <.ext|UTI|url-scheme>  <role>`). It runs as part of `./install.sh all` (macOS only) and re-applies each run. To assign a new app: get its bundle id with `osascript -e 'id of app "<App>"'`, add a line to `duti.conf`, and run `./install.sh duti`. It degrades gracefully (skips) if `duti` isn't installed.
+
 ## Modules
 
 | Module | Manages | Platform |
@@ -53,6 +55,7 @@ Mac App Store apps are not managed by `brew bundle`; install them manually (the 
 | `macos` | System defaults, login items | macOS |
 | `readline` | `.inputrc`, `.screenrc` | all |
 | `brew` | Homebrew packages via `Brewfile` (+ per-machine extras) | macOS |
+| `duti` | Default apps for file types via `duti.conf` | macOS |
 
 ## How It Works
 
