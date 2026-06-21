@@ -42,6 +42,10 @@ done
 setopt nocaseglob
 setopt correct
 
+# /etc/zprofile runs path_helper between .zshenv and .zshrc, which shoves
+# /usr/bin ahead of Homebrew. Re-prepend so brew-installed tools win.
+[[ -d /opt/homebrew/bin ]] && export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.

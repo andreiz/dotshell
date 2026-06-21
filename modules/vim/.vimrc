@@ -1,3 +1,9 @@
+scriptencoding utf-8
+
+" Must be set before polyglot loads (it's a pack/start plugin).
+" Sleuth globs neighboring files to guess indent — slow on repos with many *.conf files.
+let g:polyglot_disabled = ['autoindent']
+
 syntax on
 filetype plugin indent on
 
@@ -18,7 +24,7 @@ colorscheme everforest
 " Whitespace
 set expandtab
 set list
-set listchars=tab:»·,trail:·,nbsp:␣,extends:»,precedes:«
+set listchars=tab:»·\ ,trail:·,nbsp:␣,extends:»,precedes:«
 
 " Toggle whitespace symbols
 nnoremap <leader>l :set list!<CR>

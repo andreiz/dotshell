@@ -29,4 +29,14 @@ post_install() {
         info "Installing vim-airline-themes..."
         git clone --depth 1 https://github.com/vim-airline/vim-airline-themes "$start_dir/vim-airline-themes"
     fi
+
+    if [[ ! -d "$start_dir/vim-fugitive" ]]; then
+        info "Installing vim-fugitive..."
+        git clone --depth 1 https://github.com/tpope/vim-fugitive "$start_dir/vim-fugitive"
+    fi
+
+    if [[ ! -d "$start_dir/vim-surround" ]]; then
+        info "Installing vim-surround..."
+        git clone --depth 1 https://github.com/tpope/vim-surround "$start_dir/vim-surround"
+    fi
 }
