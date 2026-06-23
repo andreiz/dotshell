@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>org.zmievski.heic2jpeg</string>
+
+    <!-- Routed through AgentRunner.app so Full Disk Access attaches to the
+         bundle id (org.zmievski.agent-runner), not to /bin/bash. argv[1] is
+         the real script to run. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/andrei/projects/dotshell/launchd-agents/AgentRunner.app/Contents/MacOS/runner</string>
+        <string>/Users/andrei/projects/dotshell/launchd-agents/bin/heic2jpeg.sh</string>
+    </array>
+
+    <!-- Fire whenever ~/Downloads changes (e.g. an AirDropped HEIC lands). -->
+    <key>WatchPaths</key>
+    <array>
+        <string>/Users/andrei/Downloads</string>
+    </array>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/heic2jpeg.out</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/heic2jpeg.err</string>
+</dict>
+</plist>
