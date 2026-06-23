@@ -72,7 +72,7 @@ source**, split by privilege tier so each agent gets only what it needs:
   scheme. Direct `python3` (stdlib only), **not** via the runner — reads its HA
   token from the Keychain (`ha-things-drain`), so it keeps a stable invocation
   identity. Script lives in-place at
-  `~/projects/home-assistant/scripts/things-drain/things_drain.py`. Logs:
+  `~/projects/ha-workshop/scripts/things-drain/things_drain.py`. Logs:
   `/tmp/thingsdrain.{out,err}`.
 
 - **org.zmievski.imessage-export** — monthly (1st at 10:00); exports the previous

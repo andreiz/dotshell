@@ -9,11 +9,11 @@
          protected-folder access. It reads the HA token from the Keychain
          (service "ha-things-drain"); routing through a different bundle id
          would change the identity the Keychain ACL trusts and could break that
-         read. Script stays in-place in the home-assistant project. -->
+         read. Script stays in-place in the ha-workshop project. -->
     <key>ProgramArguments</key>
     <array>
         <string>/usr/bin/python3</string>
-        <string>/Users/andrei/projects/home-assistant/scripts/things-drain/things_drain.py</string>
+        <string>/Users/andrei/projects/ha-workshop/scripts/things-drain/things_drain.py</string>
     </array>
 
     <!-- Run every 30 minutes (1800s). Fires on wake if a slot was missed while asleep. -->
