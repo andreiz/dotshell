@@ -8,6 +8,30 @@ Run `./install.sh` to build the runner bundles and symlink + (re)load every
 agent. It's idempotent — each agent is `bootout`'d then `bootstrap`'d via the
 modern `launchctl` API.
 
+> This lives in dotshell but is **not** a stow module — it's imperative (compiles
+> a binary, bootstraps services, needs manual TCC grants), so it has its own
+> `install.sh` and is run by hand. Installed ~once per machine. The fleet catalog
+> (`continental/devices/wick.md`) points here for rebuilds.
+
+## Fresh-machine setup
+
+The script automates the build/load; the rest is manual and easy to forget.
+
+1. **Xcode Command Line Tools** (provides `clang` + `codesign`): `xcode-select --install`
+2. **Build + load the agents:** `./install.sh`
+3. **Grant TCC** (per the runner-bundle table below):
+   - `AgentRunner.app` — allow the just-in-time **Downloads folder** prompt when
+     heic2jpeg first fires (or AirDrop a HEIC to trigger it).
+   - `AgentRunnerFDA.app` — add it manually under **System Settings → Privacy &
+     Security → Full Disk Access** (FDA is not promptable).
+4. **Set the Keychain secrets** — unscripted; if missing, the affected agents run
+   but silently skip their Home Assistant calls:
+   ```sh
+   security add-generic-password -s ha-things-drain    -a "$USER" -w   # things-drain
+   security add-generic-password -s ha-imessage-export -a "$USER" -w   # imessage-export
+   ```
+   (omit `-w` to be prompted, so the token never lands in shell history)
+
 ## TCC / privacy: the runner bundles
 
 macOS attaches privacy permissions (Downloads/Documents/Desktop folder access,
