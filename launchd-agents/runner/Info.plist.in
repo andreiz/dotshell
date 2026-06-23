@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>AgentRunner</string>
+    <string>@NAME@</string>
     <key>CFBundleDisplayName</key>
-    <string>Launchd Agent Runner</string>
+    <string>@NAME@</string>
     <key>CFBundleIdentifier</key>
-    <string>org.zmievski.agent-runner</string>
+    <string>@BUNDLE_ID@</string>
     <key>CFBundleExecutable</key>
     <string>runner</string>
     <key>CFBundlePackageType</key>

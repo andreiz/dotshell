@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>org.zmievski.imessage-export</string>
+
+    <!-- Routed through AgentRunnerFDA.app: imessage-exporter reads
+         ~/Library/Messages/chat.db, which requires Full Disk Access. That grant
+         is on the FDA bundle id (org.zmievski.agent-runner-fda), kept separate
+         from the Downloads-scoped AgentRunner so heic2jpeg stays least-privilege.
+         argv[1] is the real script. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/andrei/projects/dotshell/launchd-agents/AgentRunnerFDA.app/Contents/MacOS/runner</string>
+        <string>/Users/andrei/projects/dotshell/launchd-agents/bin/imessage-export.sh</string>
+    </array>
+
+    <!-- Monthly: 1st of the month at 10:00 local. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Day</key>
+        <integer>1</integer>
+        <key>Hour</key>
+        <integer>10</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/imessage-export.out</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/imessage-export.err</string>
+</dict>
+</plist>

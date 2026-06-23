@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 #
-# 1. Build AgentRunner.app (compiled, ad-hoc-signed launcher) so macOS privacy
-#    permissions attach to a stable bundle id (org.zmievski.agent-runner)
-#    instead of to /bin/bash. The FIRST time an agent touches a protected
-#    folder, macOS prompts (e.g. "AgentRunner wants to access your Downloads
-#    folder") — click Allow. The grant is keyed to the bundle id, so every
-#    agent routed through the runner inherits it (no per-script grant). Manage
-#    it under: System Settings > Privacy & Security > Files and Folders.
+# 1. Build the runner bundles (compiled, ad-hoc-signed launchers from
+#    runner/runner.c) so macOS privacy permissions attach to a stable bundle id
+#    instead of to /bin/bash. Two bundles, one per privilege tier:
+#      AgentRunner.app      org.zmievski.agent-runner       -> Downloads-scoped agents
+#      AgentRunnerFDA.app   org.zmievski.agent-runner-fda   -> Full Disk Access agents
+#    The FIRST time an agent touches a protected resource, macOS prompts (e.g.
+#    "...wants to access your Downloads folder", or grant Full Disk Access to
+#    AgentRunnerFDA.app under Privacy & Security). Grants are keyed to the
+#    bundle id, so every agent routed through a bundle inherits its access.
 # 2. Symlink every agents/*.plist into ~/Library/LaunchAgents and (re)load it
 #    with the modern launchctl API. Safe to re-run.
 #
@@ -17,30 +19,30 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUNNER_SRC="$SCRIPT_DIR/runner"
-APP="$SCRIPT_DIR/AgentRunner.app"
-APP_BIN="$APP/Contents/MacOS/runner"
 LAUNCH_AGENTS="$HOME/Library/LaunchAgents"
 DOMAIN="gui/$(id -u)"
-BUNDLE_ID="org.zmievski.agent-runner"
 
-build_runner() {
-    # Rebuild only when the binary is missing or older than its sources, so the
-    # code signature (and therefore the FDA grant) stays stable across re-runs.
-    if [[ -x "$APP_BIN" \
-          && "$APP_BIN" -nt "$RUNNER_SRC/runner.c" \
-          && "$APP/Contents/Info.plist" -nt "$RUNNER_SRC/Info.plist" ]]; then
-        echo "AgentRunner.app up to date"
+# build_bundle <app_dir> <bundle_id> <display_name>
+# Rebuilds only when the binary is missing or older than its sources, so the
+# code signature (and therefore the TCC grant) stays stable across re-runs.
+build_bundle() {
+    local app="$1" bid="$2" name="$3"
+    local bin="$app/Contents/MacOS/runner"
+    if [[ -x "$bin" \
+          && "$bin" -nt "$RUNNER_SRC/runner.c" \
+          && "$app/Contents/Info.plist" -nt "$RUNNER_SRC/Info.plist.in" ]]; then
+        echo "$(basename "$app") up to date"
         return
     fi
 
-    echo "building AgentRunner.app..."
-    mkdir -p "$APP/Contents/MacOS"
-    cp "$RUNNER_SRC/Info.plist" "$APP/Contents/Info.plist"
-    clang -O2 -Wall -o "$APP_BIN" "$RUNNER_SRC/runner.c"
-    # Ad-hoc sign the whole bundle with a stable identifier == bundle id.
-    codesign --force --sign - --identifier "$BUNDLE_ID" "$APP"
-    echo "  signed $APP"
-    echo "  -> if the binary changed, re-confirm Full Disk Access for AgentRunner.app"
+    echo "building $(basename "$app") ($bid)..."
+    mkdir -p "$app/Contents/MacOS"
+    sed -e "s|@BUNDLE_ID@|$bid|g" -e "s|@NAME@|$name|g" \
+        "$RUNNER_SRC/Info.plist.in" > "$app/Contents/Info.plist"
+    clang -O2 -Wall -o "$bin" "$RUNNER_SRC/runner.c"
+    codesign --force --sign - --identifier "$bid" "$app"
+    echo "  signed $app"
+    echo "  -> if the binary changed, re-confirm this bundle's privacy grant"
 }
 
 load_agents() {
@@ -58,5 +60,6 @@ load_agents() {
     done
 }
 
-build_runner
+build_bundle "$SCRIPT_DIR/AgentRunner.app"    "org.zmievski.agent-runner"     "Launchd Agent Runner"
+build_bundle "$SCRIPT_DIR/AgentRunnerFDA.app" "org.zmievski.agent-runner-fda" "Launchd Agent Runner (Full Disk)"
 load_agents

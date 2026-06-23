@@ -1,2 +1,3 @@
-# Built artifact — compiled + signed by install.sh from runner/ sources.
+# Built artifacts — compiled + signed by install.sh from runner/ sources.
 AgentRunner.app/
+AgentRunnerFDA.app/
