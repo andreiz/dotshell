@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>org.zmievski.thingsdrain</string>
+
+    <!-- Direct python3 invocation, NOT via AgentRunner.app: this agent needs no
+         protected-folder access. It reads the HA token from the Keychain
+         (service "ha-things-drain"); routing through a different bundle id
+         would change the identity the Keychain ACL trusts and could break that
+         read. Script stays in-place in the home-assistant project. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python3</string>
+        <string>/Users/andrei/projects/home-assistant/scripts/things-drain/things_drain.py</string>
+    </array>
+
+    <!-- Run every 30 minutes (1800s). Fires on wake if a slot was missed while asleep. -->
+    <key>StartInterval</key>
+    <integer>1800</integer>
+
+    <!-- Also run once right after login / when the agent is loaded. -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/thingsdrain.out</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/thingsdrain.err</string>
+</dict>
+</plist>

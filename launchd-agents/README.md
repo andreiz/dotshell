@@ -38,4 +38,12 @@ TCC-responsible process and its grant covers the script.
   conversion**. Deps: `sips` (built-in). Needs Downloads-folder access (granted
   to the runner bundle, see above). Logs: `/tmp/heic2jpeg.{out,err}`.
 
-<!-- Planned (not yet added): org.zmievski.imessage-export, org.zmievski.thingsdrain -->
+- **org.zmievski.thingsdrain** — runs every 30 min (and at load); drains the Home
+  Assistant "Things Outbox" to-do list into Things 3 via the `things:///add` URL
+  scheme. Direct `python3` (stdlib only), **not** via the runner — reads its HA
+  token from the Keychain (`ha-things-drain`), so it keeps a stable invocation
+  identity. Script lives in-place at
+  `~/projects/home-assistant/scripts/things-drain/things_drain.py`. Logs:
+  `/tmp/thingsdrain.{out,err}`.
+
+<!-- Planned (not yet added): org.zmievski.imessage-export -->
