@@ -6,9 +6,8 @@
     # Convert Windows line ending (CRLF) to macOS line ending (LF) when adding files to git
     autocrlf = input
 
-    # Use custom `.gitignore` and `.gitattributes`
+    # Use custom `.gitignore`
 	excludesfile = ~/.gitignore_global
-	attributesfile = ~/.gitattributes
 
 	# Treat spaces before tabs and all kinds of trailing whitespace as an error
 	# [default] trailing-space: looks for spaces at the end of a line
