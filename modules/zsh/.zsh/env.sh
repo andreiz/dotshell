@@ -5,6 +5,11 @@ export TZ=America/Los_Angeles
 export EDITOR=vim
 export CDPATH=~/
 
+# Prepend ~/.local/bin to PATH (skip if already present)
+if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
 export FD_OPTIONS="--follow --hidden --exclude .git --exclude node_modules"
 
 export FZF_DEFAULT_OPTS="
