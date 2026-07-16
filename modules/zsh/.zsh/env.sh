@@ -29,6 +29,8 @@ export FZF_ALT_C_COMMAND="fd --type d $FD_OPTIONS"
 
 export BAT_THEME="TwoDark"
 
+export CLAUDE_CODE_DISABLE_MOUSE_CLICKS=1
+
 # History
 HISTFILE=~/.zsh_history
 HISTSIZE=50000
